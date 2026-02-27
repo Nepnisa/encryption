@@ -3,443 +3,302 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔐 多语言加密工具 - Web版</title>
+    <title>🔐 多语言加密工具 · 极光版</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* ===== 变量与重置（与之前一致，保持不变） ===== */
         :root {
-            --bg-primary: #f5f5f7;
+            --bg-primary: #f0f2f5;
             --bg-secondary: #ffffff;
-            --text-primary: #2c3e50;
-            --text-secondary: #7f8c8d;
-            --accent: #3498db;
-            --success: #27ae60;
-            --warning: #e67e22;
-            --border: #e0e0e0;
-            --shadow: rgba(0, 0, 0, 0.08);
-            --transition: all 0.3s ease;
+            --text-primary: #1e2b3c;
+            --text-secondary: #5e6f8d;
+            --accent: #4361ee;
+            --accent-soft: #4895ef;
+            --success: #06d6a0;
+            --warning: #ff9e00;
+            --error: #ef476f;
+            --border: rgba(0, 0, 0, 0.08);
+            --shadow: rgba(67, 97, 238, 0.15);
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --glass-edge: rgba(255, 255, 255, 0.5);
+            --transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+            --noise-opacity: 0.02;
         }
 
         .dark-mode {
-            --bg-primary: #1a1a2e;
-            --bg-secondary: #16213e;
-            --text-primary: #e6e6e6;
-            --text-secondary: #b0b0b0;
+            --bg-primary: #0b1120;
+            --bg-secondary: #1a2639;
+            --text-primary: #e1e9f0;
+            --text-secondary: #9aaec9;
             --accent: #4cc9f0;
+            --accent-soft: #7209b7;
             --success: #4ade80;
             --warning: #fbbf24;
-            --border: #2d3748;
-            --shadow: rgba(0, 0, 0, 0.3);
+            --error: #f87171;
+            --border: rgba(255, 255, 255, 0.06);
+            --shadow: rgba(76, 201, 240, 0.2);
+            --card-bg: rgba(26, 38, 57, 0.8);
+            --glass-edge: rgba(255, 255, 255, 0.03);
+            --noise-opacity: 0.03;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', 'Segoe UI', 'Microsoft YaHei', sans-serif; }
 
         body {
             background-color: var(--bg-primary);
-            color: var(--text-primary);
-            line-height: 1.6;
-            transition: var(--transition);
+            background-image: radial-gradient(circle at 30% 40%, rgba(67, 97, 238, 0.03) 0%, transparent 30%),
+                              radial-gradient(circle at 80% 70%, rgba(76, 201, 240, 0.03) 0%, transparent 35%);
             min-height: 100vh;
             padding: 20px;
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color 0.4s ease;
+            position: relative;
         }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: radial-gradient(rgba(0, 0, 0, var(--noise-opacity)) 1px, transparent 1px);
+            background-size: 32px 32px;
+            pointer-events: none;
+            z-index: 0;
         }
+        .dark-mode::before { background-image: radial-gradient(rgba(255, 255, 255, var(--noise-opacity)) 1px, transparent 1px); }
 
-        /* 头部样式 */
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; position: relative; z-index: 2; }
+
+        /* ===== 头部 ===== */
         header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid var(--accent);
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;
+            padding: 20px 30px; background: var(--card-bg); backdrop-filter: blur(12px);
+            border-radius: 36px; border: 1px solid var(--glass-edge);
+            box-shadow: 0 20px 40px -12px var(--shadow);
         }
-
         .title-section h1 {
-            font-size: 2.2rem;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, var(--accent), #9b59b6);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            display: inline-block;
+            font-size: 2.4rem; font-weight: 700;
+            background: linear-gradient(145deg, var(--accent), var(--accent-soft));
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+            display: inline-flex; align-items: center; gap: 12px; letter-spacing: -0.5px;
         }
-
-        .title-section p {
-            color: var(--text-secondary);
-            font-size: 1rem;
-        }
-
-        .controls-top {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
+        .title-section h1 i { font-size: 2rem; color: var(--accent); filter: drop-shadow(0 4px 8px var(--shadow)); }
+        .title-section p { color: var(--text-secondary); font-size: 0.95rem; margin-top: 6px; }
 
         /* 主题切换按钮 */
-        .theme-toggle {
-            background: var(--bg-secondary);
-            border: 2px solid var(--border);
-            border-radius: 50px;
-            width: 60px;
-            height: 30px;
-            position: relative;
-            cursor: pointer;
+        .theme-toggle-btn {
+            background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 60px;
+            width: 60px; height: 36px; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 6px; cursor: pointer; position: relative;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.05), 0 4px 12px var(--shadow);
             transition: var(--transition);
         }
-
-        .theme-toggle::after {
-            content: '';
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            width: 22px;
-            height: 22px;
-            background: var(--accent);
-            border-radius: 50%;
-            transition: var(--transition);
+        .theme-toggle-btn i { font-size: 1.2rem; z-index: 2; transition: var(--transition); color: var(--text-secondary); }
+        .dark-mode .theme-toggle-btn .fa-sun { color: var(--warning); opacity: 0.6; }
+        .dark-mode .theme-toggle-btn .fa-moon { color: var(--accent); }
+        .theme-toggle-btn::before {
+            content: ''; position: absolute; left: 4px; width: 28px; height: 28px;
+            background: var(--accent); border-radius: 50%; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 2px 8px var(--shadow);
         }
+        .dark-mode .theme-toggle-btn::before { transform: translateX(24px); background: var(--warning); }
 
-        .dark-mode .theme-toggle::after {
-            transform: translateX(30px);
-            background: var(--warning);
-        }
-
-        .theme-icon {
-            font-size: 1.2rem;
-            margin-left: 10px;
-        }
-
-        /* 主内容区域 */
+        /* ===== 主卡片区域 ===== */
         .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 30px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;
         }
-
-        @media (max-width: 1024px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-        }
+        @media (max-width: 1024px) { .main-content { grid-template-columns: 1fr; } }
 
         .card {
-            background: var(--bg-secondary);
-            border-radius: 16px;
-            padding: 25px;
-            box-shadow: 0 8px 30px var(--shadow);
-            border: 1px solid var(--border);
-            transition: var(--transition);
-            height: 100%;
-            display: flex;
-            flex-direction: column;
+            background: var(--card-bg); backdrop-filter: blur(12px); border-radius: 32px; padding: 28px;
+            border: 1px solid var(--glass-edge); box-shadow: 0 20px 40px -16px var(--shadow), inset 0 0 0 1px rgba(255,255,255,0.1);
+            transition: var(--transition); display: flex; flex-direction: column; position: relative; overflow: hidden;
         }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px var(--shadow);
+        .card::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.2) 0%, transparent 50%);
+            opacity: 0; transition: opacity 0.4s; pointer-events: none;
         }
+        .card:hover { transform: translateY(-6px); box-shadow: 0 30px 50px -20px var(--shadow), inset 0 0 0 1px rgba(255,255,255,0.2); }
+        .card:hover::after { opacity: 1; }
 
         .card-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
+            display: flex; align-items: center; margin-bottom: 20px; padding-bottom: 12px;
             border-bottom: 1px solid var(--border);
         }
-
-        .card-header i {
-            font-size: 1.5rem;
-            margin-right: 12px;
-            color: var(--accent);
-        }
-
-        .card-header h2 {
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
+        .card-header i { font-size: 1.8rem; margin-right: 14px; color: var(--accent); filter: drop-shadow(0 4px 8px var(--shadow)); }
+        .card-header h2 { font-size: 1.6rem; font-weight: 600; letter-spacing: -0.3px; }
 
         /* 文本区域 */
-        .text-area-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
+        .text-area-container { flex: 1; display: flex; flex-direction: column; }
         .text-area-wrapper {
-            flex: 1;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            overflow: hidden;
-            background: var(--bg-primary);
+            flex: 1; border-radius: 20px; overflow: hidden; background: var(--bg-primary);
+            border: 1px solid var(--border); transition: var(--transition); box-shadow: inset 0 2px 8px rgba(0,0,0,0.02);
         }
-
+        .text-area-wrapper:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2), inset 0 2px 8px rgba(0,0,0,0.02); }
         textarea {
-            width: 100%;
-            height: 100%;
-            min-height: 300px;
-            padding: 20px;
-            border: none;
-            background: transparent;
-            color: var(--text-primary);
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 15px;
-            line-height: 1.5;
-            resize: none;
-            outline: none;
-            transition: var(--transition);
+            width: 100%; height: 100%; min-height: 300px; padding: 22px; border: none; background: transparent;
+            color: var(--text-primary); font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 15px; line-height: 1.6; resize: none; outline: none; transition: var(--transition);
         }
-
-        textarea:focus {
-            background: rgba(52, 152, 219, 0.03);
-        }
-
+        textarea:focus { background: rgba(67, 97, 238, 0.02); }
         .char-count {
-            text-align: right;
-            margin-top: 10px;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
+            text-align: right; margin-top: 12px; color: var(--text-secondary); font-size: 0.9rem;
+            font-weight: 500; display: flex; justify-content: flex-end; align-items: center; gap: 6px;
         }
+        .char-count i { font-size: 0.8rem; opacity: 0.7; }
 
-        /* 按钮区域 */
+        /* 按钮组 */
         .button-section {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin: 30px 0;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin: 30px 0;
         }
-
         .btn {
-            padding: 14px 20px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: var(--transition);
+            padding: 16px 20px; border: none; border-radius: 40px; font-size: 1rem; font-weight: 600;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px;
+            transition: var(--transition); background: var(--bg-secondary); color: var(--text-primary);
+            border: 1px solid var(--border); box-shadow: 0 6px 14px var(--shadow); backdrop-filter: blur(4px);
+            position: relative; overflow: hidden;
         }
-
-        .btn i {
-            font-size: 1.1rem;
+        .btn::before {
+            content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; border-radius: 50%;
+            background: rgba(255,255,255,0.3); transform: translate(-50%, -50%); transition: width 0.4s, height 0.4s;
         }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--accent), #2980b9);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #2980b9, var(--accent));
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, var(--success), #219653);
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: linear-gradient(135deg, #219653, var(--success));
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
-        }
-
-        .btn-warning {
-            background: linear-gradient(135deg, var(--warning), #d35400);
-            color: white;
-        }
-
-        .btn-warning:hover {
-            background: linear-gradient(135deg, #d35400, var(--warning));
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(230, 126, 34, 0.3);
-        }
-
-        .btn-secondary {
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            border: 1px solid var(--border);
-        }
-
-        .btn-secondary:hover {
-            background: var(--bg-primary);
-            transform: translateY(-2px);
-        }
+        .btn:active::before { width: 200px; height: 200px; }
+        .btn i { font-size: 1.2rem; transition: transform 0.2s; }
+        .btn:hover i { transform: scale(1.1); }
+        .btn:active { transform: scale(0.97); box-shadow: 0 2px 8px var(--shadow); }
+        .btn-primary { background: linear-gradient(145deg, var(--accent), #3a56d9); color: white; border: none; }
+        .btn-success { background: linear-gradient(145deg, var(--success), #05b384); color: white; border: none; }
+        .btn-warning { background: linear-gradient(145deg, var(--warning), #e58e00); color: white; border: none; }
 
         /* 状态栏 */
         .status-bar {
-            background: var(--bg-secondary);
-            border-radius: 10px;
-            padding: 15px 25px;
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid var(--border);
-            font-size: 0.95rem;
+            background: var(--card-bg); backdrop-filter: blur(12px); border-radius: 60px;
+            padding: 16px 28px; display: flex; justify-content: space-between; align-items: center;
+            border: 1px solid var(--glass-edge); box-shadow: 0 10px 24px -10px var(--shadow); font-size: 0.95rem;
+            margin-top: 10px;
         }
-
-        .status-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
+        .status-item { display: flex; align-items: center; gap: 12px; }
         .status-icon {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--success);
+            width: 12px; height: 12px; border-radius: 50%; background: var(--success);
+            box-shadow: 0 0 0 2px rgba(6, 214, 160, 0.3); animation: pulse 2s infinite;
         }
-
-        .status-icon.error {
-            background: #e74c3c;
-        }
-
-        .status-icon.warning {
-            background: var(--warning);
-        }
-
-        .status-icon.idle {
-            background: var(--text-secondary);
-        }
+        .status-icon.error { background: var(--error); box-shadow: 0 0 0 2px rgba(239, 71, 111, 0.3); }
+        .status-icon.warning { background: var(--warning); box-shadow: 0 0 0 2px rgba(255, 158, 0, 0.3); }
+        .status-icon.idle { background: var(--text-secondary); box-shadow: 0 0 0 2px rgba(94, 111, 141, 0.2); animation: none; }
+        @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.7; transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); } }
 
         /* 快捷键提示 */
         .shortcuts {
-            margin-top: 30px;
-            padding: 20px;
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            border: 1px solid var(--border);
+            margin-top: 30px; padding: 24px; background: var(--card-bg); backdrop-filter: blur(8px);
+            border-radius: 28px; border: 1px solid var(--glass-edge); box-shadow: 0 10px 30px -12px var(--shadow);
         }
-
         .shortcuts h3 {
-            margin-bottom: 15px;
-            color: var(--accent);
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            margin-bottom: 18px; color: var(--accent); display: flex; align-items: center; gap: 12px;
+            font-size: 1.3rem; font-weight: 600;
         }
-
-        .shortcut-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 15px;
-        }
-
+        .shortcut-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; }
         .shortcut-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 15px;
-            background: var(--bg-primary);
-            border-radius: 8px;
-            border-left: 4px solid var(--accent);
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            background: var(--bg-primary); border-radius: 40px; border-left: 5px solid var(--accent);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02); transition: var(--transition);
+        }
+        .shortcut-item:hover { transform: translateX(4px); border-left-color: var(--warning); }
+        .shortcut-key {
+            background: var(--bg-secondary); padding: 6px 16px; border-radius: 40px;
+            font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--accent);
+            border: 1px solid var(--border); font-size: 0.85rem; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
         }
 
-        .shortcut-key {
-            background: var(--bg-secondary);
-            padding: 4px 10px;
-            border-radius: 5px;
-            font-family: monospace;
-            font-weight: bold;
-            color: var(--accent);
-            border: 1px solid var(--border);
+        /* ===== 模态框（更新日志页面） ===== */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(6px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000; visibility: hidden; opacity: 0;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.show { visibility: visible; opacity: 1; }
+
+        .modal-content {
+            max-width: 800px; width: 90%; max-height: 80vh; overflow-y: auto;
+            background: var(--card-bg); backdrop-filter: blur(20px);
+            border-radius: 40px; border: 1px solid var(--glass-edge);
+            box-shadow: 0 40px 80px -20px var(--shadow), inset 0 1px 1px rgba(255,255,255,0.2);
+            padding: 30px; position: relative;
+            transform: scale(0.95); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .modal-overlay.show .modal-content { transform: scale(1); }
+
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border);
+        }
+        .modal-header h3 {
+            font-size: 1.8rem; font-weight: 600; color: var(--accent);
+            display: flex; align-items: center; gap: 12px;
+        }
+        .modal-header h3 i { font-size: 1.8rem; }
+        .modal-close {
+            background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 50%;
+            width: 44px; height: 44px; font-size: 1.4rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-secondary); transition: var(--transition);
+        }
+        .modal-close:hover { background: var(--accent); color: white; transform: rotate(90deg); }
+
+        /* 更新日志列表（与之前样式一致，但放在模态框内） */
+        .updates-list { display: flex; flex-direction: column; gap: 12px; }
+        .updates-item {
+            display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px;
+            background: var(--bg-primary); border-radius: 50px; padding: 14px 22px;
+            border-left: 6px solid var(--accent); transition: var(--transition);
+        }
+        .updates-item:hover { transform: translateX(6px); border-left-color: var(--warning); }
+        .update-badge {
+            font-size: 0.7rem; font-weight: 700; padding: 4px 10px; border-radius: 60px;
+            background: var(--accent); color: white; text-transform: uppercase; letter-spacing: 0.4px;
+        }
+        .update-badge.new { background: var(--success); }
+        .update-badge.fix { background: var(--warning); }
+        .update-badge.feature { background: var(--accent-soft); }
+        .update-version { font-weight: 700; font-size: 1.1rem; color: var(--text-primary); }
+        .update-date {
+            font-size: 0.9rem; color: var(--text-secondary); background: var(--card-bg);
+            padding: 3px 12px; border-radius: 40px; border: 1px solid var(--border); backdrop-filter: blur(4px);
+        }
+        .update-desc {
+            flex: 1 1 100%; color: var(--text-secondary); font-size: 0.95rem; margin-top: 4px;
+            line-height: 1.5; background: var(--bg-secondary); padding: 8px 14px;
+            border-radius: 40px; border: 1px solid var(--border);
+        }
+        @media (max-width: 600px) {
+            .updates-item { border-radius: 30px; padding: 12px 16px; }
         }
 
         /* 通知 */
         .notification {
-            position: fixed;
-            top: 30px;
-            right: 30px;
-            padding: 15px 25px;
-            border-radius: 10px;
-            background: var(--success);
-            color: white;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
-            transform: translateX(150%);
-            transition: transform 0.4s ease;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            max-width: 350px;
+            position: fixed; top: 30px; right: 30px; padding: 16px 28px; border-radius: 60px;
+            background: var(--success); color: white; box-shadow: 0 20px 40px -8px rgba(0,0,0,0.3);
+            transform: translateX(120%) scale(0.9); transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 1000; display: flex; align-items: center; gap: 16px; max-width: 380px;
+            font-weight: 500; backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.2);
         }
+        .notification.show { transform: translateX(0) scale(1); }
+        .notification.error { background: var(--error); }
+        .notification.warning { background: var(--warning); }
+        .notification i { font-size: 1.4rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
 
-        .notification.show {
-            transform: translateX(0);
-        }
+        /* 滚动条 */
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); border-radius: 8px; }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 8px; border: 2px solid var(--bg-primary); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-soft); }
 
-        .notification.error {
-            background: #e74c3c;
-        }
-
-        .notification.warning {
-            background: var(--warning);
-        }
-
-        /* 响应式调整 */
         @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-            }
-            
-            header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 20px;
-            }
-            
-            .controls-top {
-                align-self: flex-end;
-            }
-            
-            .button-section {
-                grid-template-columns: 1fr;
-            }
-            
-            .status-bar {
-                flex-direction: column;
-                gap: 15px;
-                align-items: flex-start;
-            }
-            
-            .shortcut-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* 滚动条美化 */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-primary);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--accent);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #2980b9;
+            header { flex-direction: column; align-items: flex-start; gap: 20px; }
+            .button-section { grid-template-columns: 1fr; }
+            .status-bar { flex-direction: column; gap: 12px; align-items: flex-start; }
         }
     </style>
 </head>
@@ -449,17 +308,18 @@
         <header>
             <div class="title-section">
                 <h1><i class="fas fa-lock"></i> 多语言加密工具</h1>
-                <p>将任意文本加密为仅包含特定字符集的字符串，并可完美还原 | 版本 1.1.4697 · Web版</p>
+                <p>将任意文本加密为仅包含特定字符集的字符串 · 版本 1.2.0β 极光版</p>
             </div>
             <div class="controls-top">
-                <div class="theme-toggle" id="themeToggle"></div>
-                <span class="theme-icon" id="themeIcon">🌙</span>
+                <button class="theme-toggle-btn" id="themeToggle" aria-label="切换主题">
+                    <i class="fas fa-sun"></i>
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
         </header>
 
         <!-- 主内容区域 -->
         <div class="main-content">
-            <!-- 输入区域 -->
             <div class="card">
                 <div class="card-header">
                     <i class="fas fa-keyboard"></i>
@@ -467,15 +327,14 @@
                 </div>
                 <div class="text-area-container">
                     <div class="text-area-wrapper">
-                        <textarea id="inputText" placeholder="在此输入要加密或解密的文本..."></textarea>
+                        <textarea id="inputText" placeholder="在此输入要加密或解密的文本... 例如: 你好，世界！Hello! こんにちは"></textarea>
                     </div>
                     <div class="char-count">
-                        字符数: <span id="inputCharCount">0</span>
+                        <i class="fas fa-font"></i> 字符数: <span id="inputCharCount">0</span>
                     </div>
                 </div>
             </div>
 
-            <!-- 输出区域 -->
             <div class="card">
                 <div class="card-header">
                     <i class="fas fa-file-code"></i>
@@ -486,32 +345,22 @@
                         <textarea id="outputText" readonly placeholder="加密或解密的结果将显示在这里..."></textarea>
                     </div>
                     <div class="char-count">
-                        字符数: <span id="outputCharCount">0</span>
+                        <i class="fas fa-font"></i> 字符数: <span id="outputCharCount">0</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 按钮区域 -->
+        <!-- 按钮区域（新增“📋 更新日志”按钮） -->
         <div class="button-section">
-            <button class="btn btn-primary" id="encryptBtn">
-                <i class="fas fa-lock"></i> 加密 →
-            </button>
-            <button class="btn btn-success" id="decryptBtn">
-                <i class="fas fa-unlock"></i> 解密 ←
-            </button>
-            <button class="btn btn-warning" id="clearBtn">
-                <i class="fas fa-trash-alt"></i> 清空
-            </button>
-            <button class="btn btn-secondary" id="copyBtn">
-                <i class="fas fa-copy"></i> 复制结果
-            </button>
-            <button class="btn btn-secondary" id="pasteBtn">
-                <i class="fas fa-paste"></i> 粘贴到输入
-            </button>
-            <button class="btn btn-secondary" id="aboutBtn">
-                <i class="fas fa-info-circle"></i> 关于
-            </button>
+            <button class="btn btn-primary" id="encryptBtn"><i class="fas fa-lock"></i> 加密 →</button>
+            <button class="btn btn-success" id="decryptBtn"><i class="fas fa-unlock"></i> 解密 ←</button>
+            <button class="btn btn-secondary" id="swapBtn"><i class="fas fa-arrows-rotate"></i> 交换</button>
+            <button class="btn btn-warning" id="clearBtn"><i class="fas fa-trash-alt"></i> 清空</button>
+            <button class="btn btn-secondary" id="copyBtn"><i class="fas fa-copy"></i> 复制结果</button>
+            <button class="btn btn-secondary" id="pasteBtn"><i class="fas fa-paste"></i> 粘贴到输入</button>
+            <button class="btn btn-secondary" id="changelogBtn"><i class="fas fa-history"></i> 📋 更新日志</button>
+            <button class="btn btn-secondary" id="aboutBtn"><i class="fas fa-info-circle"></i> 关于</button>
         </div>
 
         <!-- 状态栏 -->
@@ -521,8 +370,8 @@
                 <span id="statusText">就绪（字符集大小: <span id="charsetSize">0</span>）</span>
             </div>
             <div class="status-item">
-                <i class="fas fa-bolt"></i>
-                <span>纯前端实现 · 无需网络</span>
+                <i class="fas fa-shield-alt" style="color: var(--accent);"></i>
+                <span>纯前端 · 字节级加密</span>
             </div>
         </div>
 
@@ -530,27 +379,59 @@
         <div class="shortcuts">
             <h3><i class="fas fa-keyboard"></i> 键盘快捷键</h3>
             <div class="shortcut-grid">
-                <div class="shortcut-item">
-                    <span>加密文本</span>
-                    <kbd class="shortcut-key">Ctrl + Enter</kbd>
+                <div class="shortcut-item"><span>加密文本</span> <kbd class="shortcut-key">Ctrl + Enter</kbd></div>
+                <div class="shortcut-item"><span>解密文本</span> <kbd class="shortcut-key">Ctrl + Shift + Enter</kbd></div>
+                <div class="shortcut-item"><span>复制结果</span> <kbd class="shortcut-key">Ctrl + C</kbd></div>
+                <div class="shortcut-item"><span>粘贴到输入</span> <kbd class="shortcut-key">Ctrl + V</kbd></div>
+                <div class="shortcut-item"><span>清空所有</span> <kbd class="shortcut-key">Ctrl + Delete</kbd></div>
+                <div class="shortcut-item"><span>交换输入/输出</span> <kbd class="shortcut-key">Ctrl + Shift + S</kbd></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 更新日志模态框（独立页面效果） -->
+    <div class="modal-overlay" id="changelogModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-history"></i> 版本更新动态 · 完整日志</h3>
+                <button class="modal-close" id="closeModalBtn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="updates-list">
+                <!-- 更新条目（与之前一致，但移入模态框） -->
+                <div class="updates-item">
+                    <span class="update-badge beta">BETA</span>
+                    <span class="update-version">v1.2.0β</span>
+                    <span class="update-desc">新增交换按钮；玻璃态设计全面升级；支持亮暗主题切换；优化字符集加载；更新日志整合至独立模态框。</span>
                 </div>
-                <div class="shortcut-item">
-                    <span>解密文本</span>
-                    <kbd class="shortcut-key">Ctrl + Shift + Enter</kbd>
+                <div class="updates-item">
+                    <span class="update-badge stable">STABLE</span>
+                    <span class="update-version">v1.1.0</span>
+                    <span class="update-desc">扩展字符集：增加西里尔、希腊字母及国际音标；改进加密效率；UI微调。</span>
                 </div>
-                <div class="shortcut-item">
-                    <span>复制结果</span>
-                    <kbd class="shortcut-key">Ctrl + C</kbd>
+                <div class="updates-item">
+                    <span class="update-badge stable">STABLE</span>
+                    <span class="update-version">v1.0.1</span>
+                    <span class="update-desc">修复某些边缘字符解密失败的问题，优化复制体验。</span>
                 </div>
-                <div class="shortcut-item">
-                    <span>粘贴到输入</span>
-                    <kbd class="shortcut-key">Ctrl + V</kbd>
+                <div class="updates-item">
+                    <span class="update-badge stable">STABLE</span>
+                    <span class="update-version">v1.0.0</span>
+                    <span class="update-desc">首次发布，支持多语言文本加密为指定字符集。</span>
                 </div>
-                <div class="shortcut-item">
-                    <span>清空所有</span>
-                    <kbd class="shortcut-key">Ctrl + Delete</kbd>
+                <div class="updates-item">
+                    <span class="update-badge alpha">Alpha</span>
+                    <span class="update-version">v0.1.0</span>
+                    <span class="update-desc">首次修改，添加快捷键和某些按钮。</span>
+                </div>
+                <div class="updates-item">
+                    <span class="update-badge dev">Dev</span>
+                    <span class="update-version">v0.0.9</span>
+                    <span class="update-desc">第一次编写。</span>
                 </div>
             </div>
+            <p style="text-align: right; margin-top: 20px; color: var(--text-secondary); font-size: 0.9rem;">
+                <i class="far fa-star"></i> 持续进化，感谢使用
+            </p>
         </div>
     </div>
 
@@ -561,7 +442,7 @@
     </div>
 
     <script>
-        // ========== 加密核心逻辑（JavaScript移植版）==========
+        // ========== 加密核心逻辑（与之前一致） ==========
         class MultiLangEncryptor {
             constructor() {
                 this.charset = this.buildCharset();
@@ -569,162 +450,64 @@
                 this.charToIndex = new Map();
                 this.charset.forEach((c, i) => this.charToIndex.set(c, i));
             }
-
-            // 构建字符集（与Python版本完全一致）
             buildCharset() {
                 const chars = new Set();
-                
-                // 拉丁字母
-                for (let i = 65; i <= 90; i++) chars.add(String.fromCharCode(i)); // A-Z
-                for (let i = 97; i <= 122; i++) chars.add(String.fromCharCode(i)); // a-z
-                
-                // 西里尔字母
-                for (let i = 0x0400; i <= 0x04FF; i++) {
-                    try {
-                        const char = String.fromCodePoint(i);
-                        const name = char.codePointAt(0).toString(16);
-                        if (name.includes('cyrillic') || (i >= 0x0400 && i <= 0x04FF)) {
-                            chars.add(char);
-                        }
-                    } catch (e) {
-                        // 忽略无效字符
-                    }
-                }
-                
-                // 希腊字母
-                for (let i = 0x0370; i <= 0x03FF; i++) {
-                    try {
-                        const char = String.fromCodePoint(i);
-                        const name = char.codePointAt(0).toString(16);
-                        if (name.includes('greek') || (i >= 0x0370 && i <= 0x03FF)) {
-                            chars.add(char);
-                        }
-                    } catch (e) {
-                        // 忽略无效字符
-                    }
-                }
-                
-                // 国际音标
-                for (let i = 0x0250; i <= 0x02AF; i++) {
-                    try {
-                        chars.add(String.fromCodePoint(i));
-                    } catch (e) {
-                        // 忽略无效字符
-                    }
-                }
-                
-                // 排序并返回数组
+                for (let i = 65; i <= 90; i++) chars.add(String.fromCharCode(i));
+                for (let i = 97; i <= 122; i++) chars.add(String.fromCharCode(i));
+                for (let i = 0x0400; i <= 0x04FF; i++) { try { chars.add(String.fromCodePoint(i)); } catch (e) {} }
+                for (let i = 0x0370; i <= 0x03FF; i++) { try { chars.add(String.fromCodePoint(i)); } catch (e) {} }
+                for (let i = 0x0250; i <= 0x02AF; i++) { try { chars.add(String.fromCodePoint(i)); } catch (e) {} }
                 return Array.from(chars).sort((a, b) => a.codePointAt(0) - b.codePointAt(0));
             }
-
-            // 加密函数
             encrypt(text) {
                 try {
-                    // 将文本编码为UTF-8字节数组
                     const encoder = new TextEncoder();
                     const data = encoder.encode(text);
-                    
-                    // 添加长度前缀（4字节大端序）
                     const lenBytes = new Uint8Array(4);
-                    const lenView = new DataView(lenBytes.buffer);
-                    lenView.setUint32(0, data.length, false); // big-endian
-                    
-                    // 构建完整字节数组：前缀(0x01) + 长度 + 数据
+                    new DataView(lenBytes.buffer).setUint32(0, data.length, false);
                     const fullBytes = new Uint8Array(1 + 4 + data.length);
-                    fullBytes[0] = 0x01; // 前缀
+                    fullBytes[0] = 0x01;
                     fullBytes.set(lenBytes, 1);
                     fullBytes.set(data, 5);
-                    
-                    // 转换为大整数
                     let num = 0n;
-                    for (let i = 0; i < fullBytes.length; i++) {
-                        num = (num << 8n) | BigInt(fullBytes[i]);
-                    }
-                    
-                    // 转换为字符集表示
-                    if (num === 0n) {
-                        return this.charset[0];
-                    }
-                    
+                    for (let i = 0; i < fullBytes.length; i++) num = (num << 8n) | BigInt(fullBytes[i]);
+                    if (num === 0n) return this.charset[0];
                     const digits = [];
                     let tempNum = num;
                     const M = BigInt(this.M);
-                    
                     while (tempNum > 0n) {
-                        const remainder = Number(tempNum % M);
+                        digits.push(this.charset[Number(tempNum % M)]);
                         tempNum = tempNum / M;
-                        digits.push(this.charset[remainder]);
                     }
-                    
                     digits.reverse();
                     return digits.join('');
-                    
                 } catch (error) {
                     throw new Error(`加密失败: ${error.message}`);
                 }
             }
-
-            // 解密函数
             decrypt(encrypted) {
                 try {
-                    // 验证输入只包含字符集中的字符
-                    for (const c of encrypted) {
-                        if (!this.charToIndex.has(c)) {
-                            throw new Error(`无效字符: ${c}`);
-                        }
-                    }
-                    
-                    // 转换为大整数
+                    for (const c of encrypted) if (!this.charToIndex.has(c)) throw new Error(`无效字符: ${c}`);
                     let num = 0n;
                     const M = BigInt(this.M);
-                    
-                    for (const c of encrypted) {
-                        num = num * M + BigInt(this.charToIndex.get(c));
-                    }
-                    
-                    // 转换为字节数组
+                    for (const c of encrypted) num = num * M + BigInt(this.charToIndex.get(c));
                     const byteLength = Math.ceil(num.toString(2).length / 8);
                     const fullBytes = new Uint8Array(byteLength);
-                    
                     let tempNum = num;
-                    for (let i = byteLength - 1; i >= 0; i--) {
-                        fullBytes[i] = Number(tempNum & 0xFFn);
-                        tempNum >>= 8n;
-                    }
-                    
-                    // 验证前缀
-                    if (fullBytes[0] !== 0x01) {
-                        throw new Error("无效的加密数据：前缀错误");
-                    }
-                    
-                    // 提取长度
-                    const lenView = new DataView(fullBytes.buffer, 1, 4);
-                    const length = lenView.getUint32(0, false); // big-endian
-                    
-                    // 提取数据
+                    for (let i = byteLength - 1; i >= 0; i--) { fullBytes[i] = Number(tempNum & 0xFFn); tempNum >>= 8n; }
+                    if (fullBytes[0] !== 0x01) throw new Error("无效的加密数据：前缀错误");
+                    const length = new DataView(fullBytes.buffer, 1, 4).getUint32(0, false);
                     const data = fullBytes.slice(5, 5 + length);
-                    
-                    // 解码为文本
-                    const decoder = new TextDecoder('utf-8');
-                    return decoder.decode(data);
-                    
+                    return new TextDecoder('utf-8').decode(data);
                 } catch (error) {
                     throw new Error(`解密失败: ${error.message}`);
                 }
             }
-
-            // 获取字符集大小
-            getCharsetSize() {
-                return this.M;
-            }
-
-            // 获取字符集预览
-            getCharsetPreview() {
-                return this.charset.slice(0, 50).join('') + (this.M > 50 ? '...' : '');
-            }
+            getCharsetSize() { return this.M; }
+            getCharsetPreview() { return this.charset.slice(0, 50).join('') + (this.M > 50 ? '...' : ''); }
         }
 
-        // ========== 界面交互逻辑 ==========
+        // ========== UI交互增强 ==========
         class EncryptorUI {
             constructor() {
                 this.encryptor = new MultiLangEncryptor();
@@ -746,60 +529,60 @@
                 this.notification = document.getElementById('notification');
                 this.notificationText = document.getElementById('notificationText');
                 this.themeToggle = document.getElementById('themeToggle');
-                this.themeIcon = document.getElementById('themeIcon');
-                
-                // 按钮
                 this.encryptBtn = document.getElementById('encryptBtn');
                 this.decryptBtn = document.getElementById('decryptBtn');
                 this.clearBtn = document.getElementById('clearBtn');
                 this.copyBtn = document.getElementById('copyBtn');
                 this.pasteBtn = document.getElementById('pasteBtn');
                 this.aboutBtn = document.getElementById('aboutBtn');
+                this.swapBtn = document.getElementById('swapBtn');
+                this.changelogBtn = document.getElementById('changelogBtn');       // 新增
+                this.modal = document.getElementById('changelogModal');
+                this.closeModalBtn = document.getElementById('closeModalBtn');
             }
 
             initEventListeners() {
-                // 输入框事件
                 this.inputText.addEventListener('input', () => this.updateCharCounts());
-                
-                // 按钮事件
                 this.encryptBtn.addEventListener('click', () => this.encrypt());
                 this.decryptBtn.addEventListener('click', () => this.decrypt());
                 this.clearBtn.addEventListener('click', () => this.clearAll());
                 this.copyBtn.addEventListener('click', () => this.copyOutput());
                 this.pasteBtn.addEventListener('click', () => this.pasteInput());
                 this.aboutBtn.addEventListener('click', () => this.showAbout());
-                
-                // 主题切换
+                if (this.swapBtn) this.swapBtn.addEventListener('click', () => this.swapText());
                 this.themeToggle.addEventListener('click', () => this.toggleTheme());
-                
-                // 键盘快捷键
-                document.addEventListener('keydown', (e) => this.handleShortcuts(e));
+                // 更新日志按钮
+                this.changelogBtn.addEventListener('click', () => this.openChangelog());
+                this.closeModalBtn.addEventListener('click', () => this.closeChangelog());
+                this.modal.addEventListener('click', (e) => {
+                    if (e.target === this.modal) this.closeChangelog();
+                });
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && this.modal.classList.contains('show')) {
+                        this.closeChangelog();
+                    }
+                    this.handleShortcuts(e);
+                });
             }
 
             initTheme() {
                 const savedTheme = localStorage.getItem('encryptor-theme');
                 if (savedTheme === 'dark') {
                     document.body.classList.add('dark-mode');
-                    this.themeIcon.textContent = '☀️';
+                } else {
+                    document.body.classList.remove('dark-mode');
                 }
             }
 
             toggleTheme() {
                 document.body.classList.toggle('dark-mode');
-                if (document.body.classList.contains('dark-mode')) {
-                    localStorage.setItem('encryptor-theme', 'dark');
-                    this.themeIcon.textContent = '☀️';
-                } else {
-                    localStorage.setItem('encryptor-theme', 'light');
-                    this.themeIcon.textContent = '🌙';
-                }
+                const isDark = document.body.classList.contains('dark-mode');
+                localStorage.setItem('encryptor-theme', isDark ? 'dark' : 'light');
             }
 
             updateCharCounts() {
-                const inputLength = this.inputText.value.length;
-                const outputLength = this.outputText.value.length;
-                this.inputCharCount.textContent = inputLength;
-                this.outputCharCount.textContent = outputLength;
+                this.inputCharCount.textContent = this.inputText.value.length;
+                this.outputCharCount.textContent = this.outputText.value.length;
             }
 
             updateCharsetSize() {
@@ -817,26 +600,27 @@
                 this.notificationText.textContent = message;
                 this.notification.className = 'notification ' + type;
                 this.notification.classList.add('show');
-                
-                setTimeout(() => {
-                    this.notification.classList.remove('show');
-                }, 3000);
+                setTimeout(() => this.notification.classList.remove('show'), 2800);
+            }
+
+            // 新增：打开/关闭更新日志模态框
+            openChangelog() {
+                this.modal.classList.add('show');
+            }
+            closeChangelog() {
+                this.modal.classList.remove('show');
             }
 
             encrypt() {
                 const input = this.inputText.value.trim();
-                if (!input) {
-                    this.showNotification('请输入要加密的文本', 'warning');
-                    return;
-                }
-
+                if (!input) return this.showNotification('请输入要加密的文本', 'warning');
                 try {
                     this.setStatus('加密中...', 'warning');
                     const result = this.encryptor.encrypt(input);
                     this.outputText.value = result;
                     this.updateCharCounts();
                     this.setStatus(`✅ 加密完成，长度: ${result.length}`, 'success');
-                    this.showNotification('文本加密成功');
+                    this.showNotification('加密成功');
                 } catch (error) {
                     this.setStatus('❌ 加密失败', 'error');
                     this.showNotification(`加密失败: ${error.message}`, 'error');
@@ -845,22 +629,28 @@
 
             decrypt() {
                 const input = this.inputText.value.trim();
-                if (!input) {
-                    this.showNotification('请输入要解密的文本', 'warning');
-                    return;
-                }
-
+                if (!input) return this.showNotification('请输入要解密的文本', 'warning');
                 try {
                     this.setStatus('解密中...', 'warning');
                     const result = this.encryptor.decrypt(input);
                     this.outputText.value = result;
                     this.updateCharCounts();
                     this.setStatus('✅ 解密完成', 'success');
-                    this.showNotification('文本解密成功');
+                    this.showNotification('解密成功');
                 } catch (error) {
                     this.setStatus('❌ 解密失败', 'error');
                     this.showNotification(`解密失败: ${error.message}`, 'error');
                 }
+            }
+
+            swapText() {
+                const inputVal = this.inputText.value;
+                const outputVal = this.outputText.value;
+                this.inputText.value = outputVal;
+                this.outputText.value = inputVal;
+                this.updateCharCounts();
+                this.setStatus('🔄 已交换输入输出', 'success');
+                this.showNotification('文本已交换');
             }
 
             clearAll() {
@@ -872,108 +662,46 @@
             }
 
             async copyOutput() {
-                const output = this.outputText.value;
-                if (!output) {
-                    this.showNotification('输出为空，无内容可复制', 'warning');
-                    return;
-                }
-
+                if (!this.outputText.value) return this.showNotification('输出为空', 'warning');
                 try {
-                    await navigator.clipboard.writeText(output);
-                    this.setStatus('📋 结果已复制到剪贴板', 'success');
-                    this.showNotification('结果已复制到剪贴板');
-                    setTimeout(() => {
-                        this.setStatus(`就绪（字符集大小: ${this.encryptor.getCharsetSize()}）`, 'idle');
-                    }, 2000);
-                } catch (error) {
-                    this.showNotification('复制失败，请手动复制', 'error');
+                    await navigator.clipboard.writeText(this.outputText.value);
+                    this.setStatus('📋 已复制', 'success');
+                    this.showNotification('结果已复制');
+                    setTimeout(() => this.setStatus(`就绪（字符集大小: ${this.encryptor.getCharsetSize()}）`, 'idle'), 1500);
+                } catch {
+                    this.showNotification('复制失败', 'error');
                 }
             }
 
             async pasteInput() {
                 try {
-                    const text = await navigator.clipboard.readText();
-                    this.inputText.value = text;
+                    this.inputText.value = await navigator.clipboard.readText();
                     this.updateCharCounts();
-                    this.setStatus('📋 已从剪贴板粘贴', 'success');
-                    this.showNotification('已从剪贴板粘贴内容');
-                    setTimeout(() => {
-                        this.setStatus(`就绪（字符集大小: ${this.encryptor.getCharsetSize()}）`, 'idle');
-                    }, 2000);
-                } catch (error) {
-                    this.showNotification('无法读取剪贴板内容', 'error');
+                    this.setStatus('📋 已粘贴', 'success');
+                    this.showNotification('已粘贴内容');
+                    setTimeout(() => this.setStatus(`就绪（字符集大小: ${this.encryptor.getCharsetSize()}）`, 'idle'), 1500);
+                } catch {
+                    this.showNotification('无法读取剪贴板', 'error');
                 }
             }
 
             showAbout() {
-                const aboutText = `🔐 多语言加密工具
-版本 1.1.4697 · Web版
-
-将任意文本加密为仅包含拉丁字母、西里尔字母、
-希腊字母和国际音标的字符串，并可完美还原。
-
-字符集大小: ${this.encryptor.getCharsetSize()}
-字符集预览: ${this.encryptor.getCharsetPreview()}
-
-© 2026 Nepnisa`;
-
-                alert(aboutText);
+                alert(`🔐 多语言加密工具 极光版\n版本 1.2.0β\n\n字符集大小: ${this.encryptor.getCharsetSize()}\n预览: ${this.encryptor.getCharsetPreview()}\n\n© Nepnisa 2026 · 玻璃态设计 · 点击“📋 更新日志”查看完整版本动态`);
             }
 
             handleShortcuts(e) {
-                // Ctrl + Enter: 加密
-                if (e.ctrlKey && e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    this.encrypt();
-                }
-                
-                // Ctrl + Shift + Enter: 解密
-                if (e.ctrlKey && e.shiftKey && e.key === 'Enter') {
-                    e.preventDefault();
-                    this.decrypt();
-                }
-                
-                // Ctrl + C: 复制结果
-                if (e.ctrlKey && e.key === 'c' && document.activeElement !== this.inputText) {
-                    e.preventDefault();
-                    this.copyOutput();
-                }
-                
-                // Ctrl + V: 粘贴到输入
-                if (e.ctrlKey && e.key === 'v' && document.activeElement !== this.inputText) {
-                    e.preventDefault();
-                    this.pasteInput();
-                }
-                
-                // Ctrl + Delete: 清空所有
-                if (e.ctrlKey && e.key === 'Delete') {
-                    e.preventDefault();
-                    this.clearAll();
-                }
+                if (e.ctrlKey && e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.encrypt(); }
+                if (e.ctrlKey && e.shiftKey && e.key === 'Enter') { e.preventDefault(); this.decrypt(); }
+                if (e.ctrlKey && e.key === 'c' && document.activeElement !== this.inputText) { e.preventDefault(); this.copyOutput(); }
+                if (e.ctrlKey && e.key === 'v' && document.activeElement !== this.inputText) { e.preventDefault(); this.pasteInput(); }
+                if (e.ctrlKey && e.key === 'Delete') { e.preventDefault(); this.clearAll(); }
+                if (e.ctrlKey && e.shiftKey && e.key === 'S') { e.preventDefault(); this.swapText(); }
             }
         }
 
-        // ========== 初始化应用 ==========
         document.addEventListener('DOMContentLoaded', () => {
             const app = new EncryptorUI();
-            
-            // 添加一些示例文本
-            const inputText = document.getElementById('inputText');
-            inputText.placeholder = `在此输入要加密或解密的文本...
-
-示例文本：
-1. 你好，世界！Hello, World!
-2. 这是一个多语言加密测试。
-3. 支持中文、英文、符号等任意内容。
-
-加密后，文本将被转换为仅包含特定字符集的字符串。`;
-            
-            // 更新字符集大小显示
-            setTimeout(() => {
-                const charsetSize = document.getElementById('charsetSize');
-                const encryptor = new MultiLangEncryptor();
-                charsetSize.textContent = encryptor.getCharsetSize();
-            }, 100);
+            document.getElementById('inputText').placeholder = `在此输入要加密或解密的文本...\n\n示例: 你好，世界！Hello! こんにちは\n支持任意Unicode字符，加密后仅显示特定字符集。`;
         });
     </script>
 </body>
